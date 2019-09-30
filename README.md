@@ -1,7 +1,7 @@
 # Lab1
 Laboratorio1
 
-## imagenGrises: 
+## imagenConv: 
 Imagen original y con diferentes matrices de convolucion aplicadas
  
 ## imagenGrises: 
