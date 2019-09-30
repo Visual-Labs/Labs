@@ -65,6 +65,7 @@ void draw() {
 //  text(frameRate,10,10);
   image(myMovie, 0, 0);
   pg.beginDraw();
+  pg.loadPixels();
   for (int i = 0; i < myMovie.pixels.length; i++) {
     color c = myMovie.pixels[i];
     pg.pixels[i] = luma(601, c);
