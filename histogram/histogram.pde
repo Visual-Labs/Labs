@@ -1,78 +1,116 @@
+PGraphics pghisto;
+PImage img;
+PImage select;
+
 // Image attributes
 int imgW = 1200;
 int imgH = 1200;
 int imgA = imgW * imgH;
+// Histogram attributes
+int histoW;
+int histoH = 100;
+float barW;
+float barH = histoH;
 
 // Histogram array
 int[] histogram = new int[256];
+int themax;
+
+// Mouse control
+int pressed;
+int released;
+float start;
+float end;
+boolean mouseFlag;
 
 void setup() {
-  size(1200, 1300);
-  // Histogram attributes
+  size(600, 700);
   int histoW = width;
-  int histoH = 100;
-  float barW = histoW/255;
-  float barH = histoH;
+  barW = histoW/255.0;
 
   // BASE IMAGE
-  PImage img;
   img = loadImage("bw_manhattan.jpg");
-  printArray(img.pixels[0]);
+  // EDITED IMAGE
+  select = loadImage("bw_manhattan.jpg");
 
-  // RGB AVERAGE PGRAPHICS
-  PGraphics pgavg;
-  pgavg = createGraphics(imgW, imgH);
-  pgavg.beginDraw();
-  pgavg.loadPixels();
-  for (int i = 0; i<img.pixels.length; i++) {
-    color c = img.pixels[i];
-    float colorvalue = (red(c)+ green(c)+ blue(c))/3; 
-    pgavg.pixels[i] = color(colorvalue);
-    histogram[(int) colorvalue] = histogram[(int) colorvalue]+1;
+  // Fill Histogram
+  for (int i = 0; i < img.pixels.length; i++) {
+    int val = (int)  lumavalue(0, img.pixels[i]);
+    histogram[val] = histogram[val] + 1;
   }
-  pgavg.updatePixels();
-  pgavg.endDraw();
-  image(pgavg, width/3, 0);
-
-  // LUMA GRAY PGRAPHICS
-  PGraphics pgluma;
-  pgluma = createGraphics(imgW, imgH);
-  pgluma.beginDraw();
-  pgluma.loadPixels();
-  for (int i = 0; i<img.pixels.length; i++) {
-    color c = img.pixels[i];
-    pgluma.pixels[i] = luma(601, c);
-  }
-  pgluma.updatePixels();
-  pgluma.endDraw();
-  image(pgluma, width*2/3, 0);
 
   // HISTOGRAM PGRAPHICS
-  int themax = max(histogram);
-  PGraphics pghisto;
+  themax = max(histogram);
   pghisto = createGraphics(histoW, histoH);
-  pghisto.beginDraw();
-  pghisto.background(0);
-  for (int i = 0; i<histogram.length; i++) {
-    if (i == 255)
-      pghisto.fill(255, 0, 0);
-    pghisto.rect(i*barW, 100, barW, -histogram[i]*barH/themax);
-  }
-  pghisto.endDraw();
-  image(pghisto, 0, height-histoH);
+
+  // DRAW INITIAL IMAGE
+  image(select, 0, 0, 600, 600);
+  drawHisto();
 }
 
+void draw() {}
 
-
-void draw() {
-}
-
-color luma(int y, color c) {
-  color l = color(0); 
+float lumavalue(int y, color c) {
+  float l; 
   if (y == 709) {
-    l = color(0.2126*red(c)+ 0.7152*green(c) + 0.0722*blue(c));
+    l = (0.2126*red(c)+ 0.7152*green(c) + 0.0722*blue(c));
   } else if (y == 601) {
-    l = color(0.2989*red(c)+ 0.5870*green(c) + 0.1140*blue(c));
+    l = (0.2989*red(c)+ 0.5870*green(c) + 0.1140*blue(c));
+  } else {
+    l = ((red(c) + green(c) + blue(c))/3);
   }
   return l;
+}
+
+void mousePressed() {
+  if (mouseY > 600) {
+    pressed = mouseX;
+    mouseFlag = true;
+    drawHisto();
+  }
+}
+
+void mouseDragged() {
+  if (mouseFlag) {
+    released = mouseX;
+    drawHisto();
+  }
+}
+
+
+void mouseReleased() {
+  if (mouseFlag) {
+    released = mouseX;
+    mouseFlag = false;
+    
+    start = map(min(pressed, released), 0, 600, 0, 255);
+    end = map(max(pressed, released), 0, 600, 0, 255);
+    
+    for (int i = 0; i < img.pixels.length; i++) {
+      float chck = lumavalue(0, img.pixels[i]);
+      if (chck < start || chck > end) {
+        select.pixels[i] = color(127);
+      } else {
+        select.pixels[i] = img.pixels[i];
+      }
+    }
+    select.updatePixels();
+    image(select, 0, 0, 600, 600);
+    drawHisto();
+  }
+}
+
+void drawHisto(){
+  pghisto.beginDraw();
+  pghisto.background(127);
+  for (int i = 0; i<histogram.length; i++) {
+    pghisto.rect(i*barW, 100, barW, -histogram[i]*barH/themax);
+  }
+  pghisto.stroke(255, 0, 0);
+  pghisto.line(pressed, 0, pressed, 100);
+  pghisto.line(released, 0, released, 100);
+  pghisto.stroke(0);
+  
+  pghisto.endDraw();
+  image(pghisto, 0, height-histoH);
 }
