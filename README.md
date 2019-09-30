@@ -13,3 +13,19 @@ En cada subdirectorio del repositorio se encuentra una de las diferentes operaci
 - [imagenGrises](): Imagen original y en escala de grises por promedio rgb y luma
 - [videoGrises](): video original y en grises por promedio rgb(comentado) y luma
 - [histogram](): histograma para una imagen
+
+## imagenConv:
+Imagen original y con diferentes matrices de convolucion aplicadas
+
+## imagenGrises:
+Imagen original y en escala de grises por promedio rgb y luma
+
+## videoGrises:
+Video original y en grises por promedio rgb(comentado) y luma
+
+## videoConv:
+Video original y matrices de convolución aplicadas a video (otras matrices comentadas)
+
+## histogram:
+
+histograma para una imagen
