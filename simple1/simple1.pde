@@ -9,19 +9,20 @@ void draw(){
   /*for(int i =0; i < 49; i++){
     square(i*75,0,75);
   }*/
-  int posX = 0;
+  float posX = 0;
   //int posY = 0;
   fill(0);
   for(int i = 0;i<8; i++){
     if(i%2 != 0){
-      posX = 25;
+      posX = (2.5*mouseX);
     }
     else if(i == 2 || i == 6){
-    posX = 50;
+    posX = 5*mouseX;
     }
     else{posX = 0;}
-    for(int j = 0; j < 49; j= j+2){
+    for(int j = 0; j < 70; j= j+2){
       square((j*75)+posX,i*76,75);
+      square((-j*75)+posX,i*76,75);
     }
   }
   stroke(181);
